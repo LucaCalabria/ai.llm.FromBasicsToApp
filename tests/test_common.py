@@ -34,3 +34,9 @@ def test_merge_idx():
 
     # Check both matching occurrences were merged and other pairs remain.
     assert merged_odd == [256, 256, 98, 99, 99]
+
+
+# Ensure pair lookup safely reports that an empty input has no pair.
+def test_get_most_frequent_pair_returns_none_without_pair():
+    # A single value cannot form an adjacent pair.
+    assert get_most_frequent_pair([97]) is None
