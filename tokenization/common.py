@@ -54,10 +54,8 @@ def merge_idx(list_idxs: list, most_frequent_pair: tuple[int, int] | list[int], 
 class Tokenizer:
     # Initialize merge state before constructing the base vocabulary.
     def __init__(self):
-        # Store learned pair-to-token mappings.
-        self.idx_merges = {}
         # Build the initial vocabulary from the empty merge mapping.
-        self.vocab = self._build_vocab_from_merges()
+        self.vocab = {}
 
     # Declare the training operation implemented by concrete tokenizers.
     def train(self, input_text: str, vocab_size: int):
@@ -72,16 +70,4 @@ class Tokenizer:
     # Declare the token-to-text operation implemented by concrete tokenizers.
     def decode(self, token_indices: list) -> str:
         # Require subclasses to implement token decoding.
-        raise NotImplementedError("The decode method should be implemented in subclasses.") 
-
-    # Build byte-token entries and expand each learned merge into bytes.
-    def _build_vocab_from_merges(self) -> dict:
-        # Map every possible byte value to its one-byte representation.
-        vocabulary = {idx: bytes([idx]) for idx in range(256)}
-        # Add each merged token by concatenating its component bytes.
-        for (pair0, pair1), idx in self.idx_merges.items():
-            # Store the bytes represented by this merged token index.
-            vocabulary[idx] = vocabulary[pair0] + vocabulary[pair1]
-        # Return the completed byte vocabulary.
-        return vocabulary
-    
+        raise NotImplementedError("The decode method should be implemented in subclasses.")
