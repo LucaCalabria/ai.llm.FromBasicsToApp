@@ -50,7 +50,7 @@ class BPETokenizer(Tokenizer):
             # Assign the next index after the base byte-token range.
             new_idx = 256 + i
             # Store the two byte values represented by the new token.
-            vocab[new_idx] = bytes([most_frequent_pair[0]]) + bytes([most_frequent_pair[1]])
+            vocab[new_idx] = vocab[most_frequent_pair[0]] + vocab[most_frequent_pair[1]]
             # Record the learned pair using its serialized key.
             merges[f"{most_frequent_pair[0]},{most_frequent_pair[1]}"] = new_idx
             # Report the pair and the token index assigned to it.
