@@ -7,6 +7,8 @@ except ImportError:
     # Import the same helpers from the notebook's local module path.
     from common import text_to_idx, get_most_frequent_pair, merge_idx, Tokenizer
 
+import torch
+
 
 # Implement byte-pair training, encoding, and decoding.
 class BPETokenizer(Tokenizer):
@@ -84,12 +86,12 @@ class BPETokenizer(Tokenizer):
             # Replace all selected pairs with their learned token index.
             indexed_tokens = merge_idx(indexed_tokens, most_frequent_pair_list, new_idx)
         # Return the sequence after all applicable merges.
-        return indexed_tokens
+        return torch.tensor(indexed_tokens, dtype=torch.long)
 
     # Convert token indices back into a UTF-8 string.
-    def decode(self, token_indices: list) -> str:
+    def decode(self, token_indices: torch.tensor) -> str:
         # Concatenate the byte representation for each token index.
-        text_bytes = b"".join(self.vocab[idx] for idx in token_indices)
+        text_bytes = b"".join(self.vocab[idx.item()] for idx in token_indices)
         # Decode the bytes and replace malformed UTF-8 sequences if needed.
         return text_bytes.decode("utf-8", errors="replace")
 
@@ -114,14 +116,14 @@ class CharTokenizer(Tokenizer):
         self.vocab, self.char_to_token = self.build_vocab_from_chars(input_text)
 
     # Convert text into token indices by applying learned merges.
-    def encode(self, input_text: str) -> list:
+    def encode(self, input_text: str) -> torch.tensor:
         # Convert the input text chars to tokens.
         indexed_tokens = [self.char_to_token[char.encode("utf-8")] for char in list(input_text)]
-        return indexed_tokens
+        return torch.tensor(indexed_tokens, dtype=torch.long)
 
     # Convert token indices back into a UTF-8 string.
-    def decode(self, token_indices: list) -> str:
+    def decode(self, token_indices: torch.tensor) -> str:
         # Concatenate the byte representation for each token index.
-        text_bytes = b"".join(self.vocab[idx] for idx in token_indices)
+        text_bytes = b"".join(self.vocab[idx.item()] for idx in token_indices)
         # Decode the bytes and replace malformed UTF-8 sequences if needed.
         return text_bytes.decode("utf-8", errors="replace")
