@@ -63,6 +63,7 @@ class BPETokenizer(Tokenizer):
         self.idx_merges = merges
         # Replace the base vocabulary with the newly trained vocabulary.
         self.vocab = vocab
+        print(f"Training complete. Learned {len(merges)} merges. Vocabulary size is now {len(vocab)}.")
 
     # Convert text bytes into token indices by applying learned merges.
     def encode(self, input_text: str) -> list:
