@@ -1,5 +1,6 @@
 # Import pytest for the test framework.
 import pytest
+import torch
 
 # Import the tokenizer constructor regression-test target.
 from tokenization.tokenizer import BPETokenizer, CharTokenizer
@@ -26,7 +27,7 @@ def test_bpe_tokenizer_trains_encodes_and_decodes():
     token_ids = tokenizer.encode("ababab")
 
     # Confirm the merge is used and reconstructs the original text.
-    assert token_ids == [256, 256, 256]
+    assert torch.equal(token_ids, torch.tensor([256, 256, 256]))
     assert tokenizer.decode(token_ids) == "ababab"
 
 
@@ -61,7 +62,7 @@ def test_char_tokenizer_encodes_and_decodes_unicode_text():
     token_ids = tokenizer.encode("🙂éba🙂")
 
     # Verify the token IDs and reconstructed Unicode text.
-    assert token_ids == [3, 2, 1, 0, 3]
+    assert torch.equal(token_ids, torch.tensor([3, 2, 1, 0, 3]))
     assert tokenizer.decode(token_ids) == "🙂éba🙂"
 
 
@@ -72,8 +73,8 @@ def test_char_tokenizer_handles_empty_text():
     tokenizer.train("")
 
     # Verify encoding and decoding empty text both remain empty.
-    assert tokenizer.encode("") == []
-    assert tokenizer.decode([]) == ""
+    assert torch.equal(tokenizer.encode(""), torch.tensor([]))
+    assert tokenizer.decode(torch.tensor([])) == ""
 
 
 # Ensure encoding fails when text contains a character absent from training.
