@@ -8,6 +8,7 @@ except ImportError:
     from common import text_to_idx, get_most_frequent_pair, merge_idx, Tokenizer
 
 import torch
+import json
 
 
 # Implement byte-pair training, encoding, and decoding.
@@ -96,6 +97,21 @@ class BPETokenizer(Tokenizer):
         # Decode the bytes and replace malformed UTF-8 sequences if needed.
         return text_bytes.decode("utf-8", errors="replace")
 
+    def save_tokenizer(self, file_path: str):
+        # Save the tokenizer's state to a file for later use.
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump({
+                'vocab': {str(k): v.decode('latin1') for k, v in self.vocab.items()},
+                'idx_merges': self.idx_merges
+            }, f, ensure_ascii=False, indent=4)
+    
+    def load_tokenizer(self, file_path: str):
+        # Load the tokenizer's state from a file.
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            self.vocab = {int(k): v.encode('latin1') for k, v in data['vocab'].items()}
+            self.idx_merges = data['idx_merges']
+
 
 class CharTokenizer(Tokenizer):
     # Initialize the shared tokenizer state.
@@ -128,3 +144,18 @@ class CharTokenizer(Tokenizer):
         text_bytes = b"".join(self.vocab[idx.item()] for idx in token_indices)
         # Decode the bytes and replace malformed UTF-8 sequences if needed.
         return text_bytes.decode("utf-8", errors="replace")
+
+    def save_tokenizer(self, file_path: str):
+        # Save the tokenizer's state to a file for later use.
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump({
+                'vocab': {str(k): v.decode('latin1') for k, v in self.vocab.items()},
+                'char_to_token': {k.decode('latin1'): str(v) for k, v in self.char_to_token.items()}
+            }, f, ensure_ascii=False, indent=4)
+    
+    def load_tokenizer(self, file_path: str):
+        # Load the tokenizer's state from a file.
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            self.vocab = {int(k): v.encode('latin1') for k, v in data['vocab'].items()}
+            self.char_to_token = {k.encode('latin1'): int(v) for k, v in data['char_to_token'].items()}

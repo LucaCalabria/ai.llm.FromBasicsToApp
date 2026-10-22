@@ -71,3 +71,14 @@ class Tokenizer:
     def decode(self, token_indices: list) -> str:
         # Require subclasses to implement token decoding.
         raise NotImplementedError("The decode method should be implemented in subclasses.")
+
+    # Declare the save operation for the tokenizer.
+    def save_tokenizer(self, file_path: str):
+        # Require subclasses to implement token saving.
+        raise NotImplementedError("The save_tokenizer method should be implemented in subclasses.")
+
+    # Declare the load operation for the tokenizer.
+    def load_tokenizer(self, file_path: str):
+        # Require subclasses to implement token loading.
+        raise NotImplementedError("The load_tokenizer method should be implemented in subclasses.")
+        
