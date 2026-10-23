@@ -14,7 +14,9 @@ class Trainer:
         
         # Backward pass and optimization
         self.optimizer.zero_grad()
+        # Compute gradients
         loss.backward()
+        # Update the model parameters
         self.optimizer.step()
         
         return loss.item()
